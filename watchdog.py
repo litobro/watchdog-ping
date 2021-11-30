@@ -5,6 +5,7 @@ import kasa
 import logging
 
 device_ip = '192.168.0.192'
+kasa_ip = '192.168.0.206'
 ping_timeout = 5
 attempts = 4
 
@@ -13,6 +14,7 @@ def main(argv):
                         format='%(asctime)s %(message)s', 
                         level=logging.INFO)
     logging.info('Watchdog on: {}'.format(argv[1]))
+    logging.info('Using switch: {}'.format(argv[2]))
 
     failed_attempts = 0
     for i in range(attempts):
@@ -23,7 +25,7 @@ def main(argv):
     if failed_attempts == attempts:
         # Device appears to be offline, restart it using smart switch
         logging.info('Device offline, restarting')
-        dev = kasa.SmartDevice(argv[1])
+        dev = kasa.SmartDevice(argv[2])
         asyncio.run(dev.update())
         asyncio.run(dev.turn_off())
         asyncio.run(dev.turn_on())
@@ -37,4 +39,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main([sys.argv[0], device_ip])
+    main([sys.argv[0], device_ip, kasa_ip])
