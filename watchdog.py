@@ -23,7 +23,7 @@ def main(argv):
     if failed_attempts == attempts:
         # Device appears to be offline, restart it using smart switch
         logging.info('Device offline, restarting')
-        dev = kasa.SmartDevice('192.168.0.206')
+        dev = kasa.SmartDevice(argv[1])
         asyncio.run(dev.update())
         asyncio.run(dev.turn_off())
         asyncio.run(dev.turn_on())
