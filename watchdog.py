@@ -32,6 +32,8 @@ def main(argv):
             assert dev.is_on
         except Exception as e:
             logging.warning('Device did not come back online!')
+    else:
+        logging.info('Device OK!')
 
 
 if __name__ == '__main__':
