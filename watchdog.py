@@ -3,28 +3,34 @@ import sys
 import asyncio
 import kasa
 import logging
+from logging.handlers import RotatingFileHandler
 
 device_ip = '192.168.0.192'
 kasa_ip = '192.168.0.206'
+logfile = '/opt/watchdog-ping/output.log'
 ping_timeout = 5
 attempts = 4
 
 def main(argv):
-    logging.basicConfig(filename='/opt/watchdog-ping/output.log', 
-                        format='%(asctime)s %(message)s', 
-                        level=logging.INFO)
-    logging.info('Watchdog on: {}'.format(argv[1]))
-    logging.info('Using switch: {}'.format(argv[2]))
+    logger = logging.getLogger('WATCHDOG-PING-LOG')
+    log_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler = RotatingFileHandler(logfile, maxBytes=2000, backupCount=2)
+    handler.setFormatter(log_format)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    logger.info('Watchdog on: {}'.format(argv[1]))
+    logger.info('Using switch: {}'.format(argv[2]))
 
     failed_attempts = 0
     for i in range(attempts):
         result = os.system('/bin/ping -c 1 -w {0} {1} > /dev/null 2>&1'.format(ping_timeout, argv[1]))
+        logger.debug('result: ' + str(result))
         if result != 0:
             failed_attempts += 1
 
     if failed_attempts == attempts:
         # Device appears to be offline, restart it using smart switch
-        logging.info('Device offline, restarting')
+        logger.info('Device offline, restarting')
         dev = kasa.SmartDevice(argv[2])
         asyncio.run(dev.update())
         asyncio.run(dev.turn_off())
@@ -33,9 +39,9 @@ def main(argv):
         try:
             assert dev.is_on
         except Exception as e:
-            logging.warning('Device did not come back online!')
+            logger.warning('Device did not come back online!')
     else:
-        logging.info('Device OK!')
+        logger.info('Device OK!')
 
 
 if __name__ == '__main__':
