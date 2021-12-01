@@ -14,7 +14,7 @@ attempts = 4
 def main(argv):
     logger = logging.getLogger('WATCHDOG-PING-LOG')
     log_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler = RotatingFileHandler(logfile, maxBytes=2000, backupCount=2)
+    handler = RotatingFileHandler(logfile, maxBytes=5*1024*1024, backupCount=2)
     handler.setFormatter(log_format)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
