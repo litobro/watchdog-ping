@@ -28,10 +28,10 @@ def main(argv):
         if result != 0:
             failed_attempts += 1
 
-    if failed_attempts == attempts:
+    if failed_attempts == attempts or True:
         # Device appears to be offline, restart it using smart switch
         logger.info('Device offline, restarting')
-        dev = kasa.SmartDevice(argv[2])
+        dev = kasa.SmartPlug(argv[2])
         asyncio.run(dev.update())
         asyncio.run(dev.turn_off())
         asyncio.run(dev.turn_on())
